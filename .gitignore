@@ -1,0 +1,17 @@
+*.iml
+.gradle/
+local.properties
+.idea/
+.DS_Store
+/build/
+*/build/
+/captures
+/schema/episodes
+!gradle-wrapper.jar
+/doc
+gen-src
+/*_test.json
+/updateSchema.sh
+/node_modules
+/schema/buxi-model.architect
+

@@ -1,8 +1,13 @@
 package kr.co.kkensu.maptest
 
 import android.app.Activity
+import android.content.Context
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Base64.DEFAULT
+import android.util.Base64.encodeToString
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -14,6 +19,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.infowindow.view.*
+import java.security.MessageDigest
+import java.security.NoSuchAlgorithmException
 import java.util.*
 
 
@@ -22,6 +29,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mapApi: GoogleMap
 
+    private var list: MutableList<Polyline>? = null
     private var polyline: Polyline? = null
     private var circle: Circle? = null
     private var polygon: Polygon? = null
@@ -30,6 +38,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         activity = this
         setContentView(R.layout.activity_main)
+
+
+        if (BuildConfig.IS_DEBUG) {
+            // 디버그 버전일때만 수행
+            Log.e("JHC_DEBUG", "test")
+        }
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
@@ -50,6 +64,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
         }
 
+        /**
+         * 지도를 움직이기 시작할 때 발생하는 이벤트 리스너
+         */
         mapApi.setOnCameraMoveStartedListener(object : GoogleMap.OnCameraMoveStartedListener {
             override fun onCameraMoveStarted(p0: Int) {
                 Log.e("JHC_DEBUG", "started : " + p0)
@@ -59,6 +76,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         })
 
+        /**
+         * 지도를 움직이다가 손을 뗐을 때 발생하는 이벤트 리스너
+         */
         mapApi.setOnCameraIdleListener(object : GoogleMap.OnCameraIdleListener {
             override fun onCameraIdle() {
                 Log.e("JHC_DEBUG", "onCameraIdle")
@@ -67,20 +87,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
         })
-
-        mapApi.setOnCameraMoveCanceledListener(object : GoogleMap.OnCameraMoveCanceledListener {
-            override fun onCameraMoveCanceled() {
-                Log.e("JHC_DEBUG", "onCameraMoveCanceled")
-            }
-
-        })
-
-//        mapApi.setOnCameraMoveListener(object : GoogleMap.OnCameraMoveListener {
-//            override fun onCameraMove() {
-////                TODO("Not yet implemented")
-//            }
-//        })
-
 
         mapApi.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
             override fun getInfoContents(p0: Marker?): View {
@@ -114,20 +120,23 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             val point1 = LatLng(37.499222, 127.065038)
             val point2 = LatLng(37.493910, 127.082934)
+            val point3 = LatLng(37.491194, 127.089253)
 
             val polylineOptions = PolylineOptions()
             polylineOptions.color(Color.parseColor("#FF0000"))
             polylineOptions.width(10f)
             polylineOptions.add(point1)
             polylineOptions.add(point2)
+            polylineOptions.add(point3)
 
             polyline = mapApi.addPolyline(polylineOptions) // 직선그리기
 
             val latLngBounds = LatLngBounds.Builder()
             latLngBounds.include(point1)
             latLngBounds.include(point2)
+            latLngBounds.include(point3)
 
-            mapApi.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 17))
+            mapApi.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 0))
         }
 
         btnCircle.setOnClickListener {
@@ -141,9 +150,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             circleOptions.radius(100.0)
             circleOptions.center(center)
 
-            if (circle != null) {
-                circle?.remove()
-            }
             circle = mapApi.addCircle(circleOptions)
             mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 17f))
         }

@@ -3,6 +3,11 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
+int increment = 0
+def date = new Date()
+def formattedDate = date.format('yyMMdd')
+def code = formattedDate.toInteger() * 10 + increment
+
 android {
     compileSdkVersion 29
 
@@ -10,15 +15,39 @@ android {
         applicationId "kr.co.kkensu.maptest"
         minSdkVersion 21
         targetSdkVersion 29
-        versionCode 1
+        versionCode code
         versionName "1.0"
 
+        multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    applicationVariants.all { variant ->
+        variant.outputs.all {
+            outputFileName = "maptest_${variant.versionName}_${variant.versionCode}_${variant.buildType.name}.apk"
+        }
+    }
+
+    dexOptions {
+        preDexLibraries = false
+
+        // dex의 크기를 늘리기 위한 설정(2^16개 초과)
+        jumboMode = true
+
+        // 앱 구동 시 자바 할당 힙을 지정
+        javaMaxHeapSize "4g"
+    }
+
+
     signingConfigs {
+        debug {
+            storeFile file('../keystore/maptest.keystore')
+            storePassword "maptest"
+            keyAlias "maptest"
+            keyPassword "maptest"
+        }
         release {
-            storeFile file('/Users/johyunchol/Documents/Android/maptest/keystore/maptest.keystore')
+            storeFile file('../keystore/maptest.keystore')
             storePassword "maptest"
             keyAlias "maptest"
             keyPassword "maptest"
@@ -27,14 +56,37 @@ android {
 
     buildTypes {
         debug {
+            debuggable true
             minifyEnabled false
-            signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
+            applicationIdSuffix ".debug" // package명 뒤에 .debug 붙이기 위해
+            buildConfigField "boolean", "IS_DEBUG", "true" // debug, release 구분을 위해
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFiles "proguard-eventbus.pro"
+            proguardFiles "proguard-firebase.pro"
+            proguardFiles "proguard-glide.pro"
+            proguardFiles "proguard-google.pro"
+            proguardFiles "proguard-gson.pro"
+            proguardFiles "proguard-navigation.pro"
+            proguardFiles "proguard-okhttp3.pro"
+            proguardFiles "proguard-retrofit.pro"
+            proguardFiles "proguard-rules.pro"
         }
         release {
+            debuggable false
             minifyEnabled false
             signingConfig signingConfigs.release
-            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            buildConfigField "boolean", "IS_DEBUG", "false" // debug, release 구분을 위해
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            proguardFiles "proguard-eventbus.pro"
+            proguardFiles "proguard-firebase.pro"
+            proguardFiles "proguard-glide.pro"
+            proguardFiles "proguard-google.pro"
+            proguardFiles "proguard-gson.pro"
+            proguardFiles "proguard-navigation.pro"
+            proguardFiles "proguard-okhttp3.pro"
+            proguardFiles "proguard-retrofit.pro"
+            proguardFiles "proguard-rules.pro"
         }
     }
 }
@@ -48,6 +100,9 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+
+    /** Multi Dex  **/
+    implementation 'com.android.support:multidex:1.0.3'
 
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
 }

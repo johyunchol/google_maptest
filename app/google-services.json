@@ -125,6 +125,46 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599552113137:android:b47fc607c4df3af57eac50",
+        "android_client_info": {
+          "package_name": "kr.co.kkensu.maptest.debug"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599552113137-n3371o8o71jnhdjkrlj5fj0srg3tsnkk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "kr.co.kkensu.maptest.debug",
+            "certificate_hash": "8fd4fa6b6d338dacaef0cedb7b1e67fcad765125"
+          }
+        },
+        {
+          "client_id": "599552113137-mujqb3p7n0sa3bkaj92aucmedd5n718u.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpal6YiKthtHBofn-u6DB7127Eabv4Gr4"
+        },
+        {
+          "current_key": "AIzaSyAu338-ZmminL7kyBgIpu4QHw61BZScbAc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599552113137-mujqb3p7n0sa3bkaj92aucmedd5n718u.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"

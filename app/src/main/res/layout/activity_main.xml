@@ -11,46 +11,76 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <ImageView
+        android:id="@+id/centerMarker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/center"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/ic_pin_center" />
+
+    <View
+        android:id="@+id/center"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_centerInParent="true" />
+
     <Button
         android:id="@+id/btnReset"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="지도초기화" />
 
-    <HorizontalScrollView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true">
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:orientation="vertical">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/txtCenter"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:text=""
+            android:textColor="@android:color/black"
+            tools:text="37.2233 / " />
 
-            <Button
-                android:id="@+id/btnPolyline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="직선그리기" />
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="60dp">
 
-            <Button
-                android:id="@+id/btnCircle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="원그리기" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
 
-            <Button
-                android:id="@+id/btnPolygon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="다각형" />
+                <Button
+                    android:id="@+id/btnPolyline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="직선그리기" />
 
-            <Button
-                android:id="@+id/btnMultiPolygon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="다각형 여러개" />
+                <Button
+                    android:id="@+id/btnCircle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="원그리기" />
 
-        </LinearLayout>
-    </HorizontalScrollView>
+                <Button
+                    android:id="@+id/btnPolygon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="다각형" />
+
+                <Button
+                    android:id="@+id/btnMultiPolygon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="다각형 여러개" />
+
+            </LinearLayout>
+        </HorizontalScrollView>
+    </LinearLayout>
 </RelativeLayout>

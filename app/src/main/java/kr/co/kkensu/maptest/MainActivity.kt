@@ -3,7 +3,7 @@ package kr.co.kkensu.maptest
 import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
-import android.view.LayoutInflater
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -33,8 +33,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-
     }
 
     override fun onMapReady(googleMap: GoogleMap?) {
@@ -52,11 +50,44 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
         }
 
+        mapApi.setOnCameraMoveStartedListener(object : GoogleMap.OnCameraMoveStartedListener {
+            override fun onCameraMoveStarted(p0: Int) {
+                Log.e("JHC_DEBUG", "started : " + p0)
+
+                txtCenter.text = ""
+                txtCenter.hint = "이동중입니다..."
+            }
+        })
+
+        mapApi.setOnCameraIdleListener(object : GoogleMap.OnCameraIdleListener {
+            override fun onCameraIdle() {
+                Log.e("JHC_DEBUG", "onCameraIdle")
+
+                txtCenter.text = getCenter().toString()
+            }
+
+        })
+
+        mapApi.setOnCameraMoveCanceledListener(object : GoogleMap.OnCameraMoveCanceledListener {
+            override fun onCameraMoveCanceled() {
+                Log.e("JHC_DEBUG", "onCameraMoveCanceled")
+            }
+
+        })
+
+//        mapApi.setOnCameraMoveListener(object : GoogleMap.OnCameraMoveListener {
+//            override fun onCameraMove() {
+////                TODO("Not yet implemented")
+//            }
+//        })
+
+
         mapApi.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
             override fun getInfoContents(p0: Marker?): View {
                 var mInfoView = activity.layoutInflater.inflate(R.layout.infowindow, null)
 
-                mInfoView.txtLatLng.text = String.format("%f/%f", p0?.position?.latitude, p0?.position?.longitude)
+                mInfoView.txtLatLng.text =
+                    String.format("%f/%f", p0?.position?.latitude, p0?.position?.longitude)
 
                 return mInfoView
             }
@@ -210,5 +241,9 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         if (polyline != null) polyline?.remove()
         if (circle != null) circle?.remove()
         if (polygon != null) polygon?.remove()
+    }
+
+    fun getCenter(): LatLng? {
+        return mapApi.cameraPosition.target
     }
 }

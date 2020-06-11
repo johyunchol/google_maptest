@@ -1,7 +1,10 @@
 package kr.co.kkensu.maptest
 
+import android.app.Activity
 import android.graphics.Color
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -10,10 +13,12 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.infowindow.view.*
 import java.util.*
 
 
 class MainActivity : AppCompatActivity(), OnMapReadyCallback {
+    private lateinit var activity: Activity
 
     private lateinit var mapApi: GoogleMap
 
@@ -23,6 +28,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        activity = this
         setContentView(R.layout.activity_main)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -46,6 +52,24 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
         }
 
+        mapApi.setInfoWindowAdapter(object : GoogleMap.InfoWindowAdapter {
+            override fun getInfoContents(p0: Marker?): View {
+                var mInfoView = activity.layoutInflater.inflate(R.layout.infowindow, null)
+
+                mInfoView.txtLatLng.text = String.format("%f/%f", p0?.position?.latitude, p0?.position?.longitude)
+
+                return mInfoView
+            }
+
+            override fun getInfoWindow(p0: Marker?): View? {
+                return null
+            }
+        })
+
+        mapApi.setOnInfoWindowClickListener {
+            Toast.makeText(activity, it.position.toString(), Toast.LENGTH_LONG).show()
+        }
+
         initResources()
     }
 
@@ -56,8 +80,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
         btnPolyline.setOnClickListener {
             clearDraw()
-
-            Toast.makeText(this, "test", Toast.LENGTH_SHORT).show()
 
             val point1 = LatLng(37.499222, 127.065038)
             val point2 = LatLng(37.493910, 127.082934)
@@ -106,12 +128,12 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             val polygonOptions = PolygonOptions()
             polygonOptions
-                    .addAll(createOuterBounds())
-                    .strokeWidth(10f)
-                    .zIndex(1f)
-                    .strokeColor(Color.parseColor("#ADADAD"))
-                    .addHole(list)
-                    .fillColor(Color.parseColor("#44000000"))
+                .addAll(createOuterBounds())
+                .strokeWidth(10f)
+                .zIndex(1f)
+                .strokeColor(Color.parseColor("#ADADAD"))
+                .addHole(list)
+                .fillColor(Color.parseColor("#44000000"))
 
             polygon = mapApi.addPolygon(polygonOptions)
 
@@ -143,13 +165,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
             val polygonOptions = PolygonOptions()
             polygonOptions
-                    .addAll(createOuterBounds())
-                    .strokeWidth(10f)
-                    .zIndex(1f)
-                    .strokeColor(Color.parseColor("#ADADAD"))
-                    .addHole(list)
-                    .addHole(list2)
-                    .fillColor(Color.parseColor("#44000000"))
+                .addAll(createOuterBounds())
+                .strokeWidth(10f)
+                .zIndex(1f)
+                .strokeColor(Color.parseColor("#ADADAD"))
+                .addHole(list)
+                .addHole(list2)
+                .fillColor(Color.parseColor("#44000000"))
 
             polygon = mapApi.addPolygon(polygonOptions)
 

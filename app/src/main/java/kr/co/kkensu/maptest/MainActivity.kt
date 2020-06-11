@@ -50,7 +50,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initResources() {
+        btnReset.setOnClickListener {
+            mapApi.clear()
+        }
+
         btnPolyline.setOnClickListener {
+            clearDraw()
+
             Toast.makeText(this, "test", Toast.LENGTH_SHORT).show()
 
             val point1 = LatLng(37.499222, 127.065038)
@@ -62,9 +68,6 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             polylineOptions.add(point1)
             polylineOptions.add(point2)
 
-            if (polyline != null) {
-                polyline?.remove()
-            }
             polyline = mapApi.addPolyline(polylineOptions) // 직선그리기
 
             val latLngBounds = LatLngBounds.Builder()
@@ -75,6 +78,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btnCircle.setOnClickListener {
+            clearDraw()
             val center = LatLng(37.499222, 127.065038)
 
             val circleOptions = CircleOptions()
@@ -92,6 +96,7 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         btnPolygon.setOnClickListener {
+            clearDraw()
             val list: MutableList<LatLng> = ArrayList()
             list.add(LatLng(37.503818, 127.064695))
             list.add(LatLng(37.506372, 127.078299))
@@ -105,16 +110,56 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                     .strokeWidth(10f)
                     .zIndex(1f)
                     .strokeColor(Color.parseColor("#ADADAD"))
-                    .addHole(list) //                .addHole(createHole(new LatLng(37.683758, 127.308075), 1000))
+                    .addHole(list)
                     .fillColor(Color.parseColor("#44000000"))
 
-            if (polygon != null) {
-                polygon?.remove()
-            }
             polygon = mapApi.addPolygon(polygonOptions)
 
             val latLngBounds = LatLngBounds.Builder()
             for (latLng in list) {
+                latLngBounds.include(latLng)
+                latLngBounds.include(latLng)
+            }
+            mapApi.animateCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds.build(), 17))
+        }
+
+        btnMultiPolygon.setOnClickListener {
+            clearDraw()
+
+            val list: MutableList<LatLng> = ArrayList()
+            list.add(LatLng(37.503818, 127.064695))
+            list.add(LatLng(37.506372, 127.078299))
+            list.add(LatLng(37.501656, 127.089006))
+            list.add(LatLng(37.494421, 127.082591))
+            list.add(LatLng(37.495936, 127.061863))
+            list.add(LatLng(37.503818, 127.064695))
+
+            val list2: MutableList<LatLng> = ArrayList()
+            list2.add(LatLng(37.499299, 127.025202))
+            list2.add(LatLng(37.501358, 127.034922))
+            list2.add(LatLng(37.493119, 127.034086))
+            list2.add(LatLng(37.492131, 127.028957))
+            list2.add(LatLng(37.499299, 127.025202))
+
+            val polygonOptions = PolygonOptions()
+            polygonOptions
+                    .addAll(createOuterBounds())
+                    .strokeWidth(10f)
+                    .zIndex(1f)
+                    .strokeColor(Color.parseColor("#ADADAD"))
+                    .addHole(list)
+                    .addHole(list2)
+                    .fillColor(Color.parseColor("#44000000"))
+
+            polygon = mapApi.addPolygon(polygonOptions)
+
+            val latLngBounds = LatLngBounds.Builder()
+            for (latLng in list) {
+                latLngBounds.include(latLng)
+                latLngBounds.include(latLng)
+            }
+
+            for (latLng in list2) {
                 latLngBounds.include(latLng)
                 latLngBounds.include(latLng)
             }
@@ -140,6 +185,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun clearDraw() {
-        mapApi.clear()
+        if (polyline != null) polyline?.remove()
+        if (circle != null) circle?.remove()
+        if (polygon != null) polygon?.remove()
     }
 }

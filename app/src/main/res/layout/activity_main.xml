@@ -11,6 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
+    <Button
+        android:id="@+id/btnReset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="지도초기화" />
+
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="60dp"
@@ -38,6 +44,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="다각형" />
+
+            <Button
+                android:id="@+id/btnMultiPolygon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="다각형 여러개" />
 
         </LinearLayout>
     </HorizontalScrollView>

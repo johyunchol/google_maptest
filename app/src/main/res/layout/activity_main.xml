@@ -57,20 +57,36 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/btnVehicle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="차량현재위치" />
+
+                <Button
+                    android:id="@+id/btnParking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    android:text="차량주차위치" />
+
+                <Button
                     android:id="@+id/btnPolyline"
                     android:layout_width="wrap_content"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:text="직선그리기" />
 
                 <Button
                     android:id="@+id/btnCircle"
                     android:layout_width="wrap_content"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:text="원그리기" />
 
                 <Button
                     android:id="@+id/btnPolygon"
                     android:layout_width="wrap_content"
+                    android:visibility="gone"
                     android:layout_height="wrap_content"
                     android:text="다각형" />
 
@@ -78,6 +94,7 @@
                     android:id="@+id/btnMultiPolygon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:text="다각형 여러개" />
 
             </LinearLayout>

@@ -1,13 +1,10 @@
 package kr.co.kkensu.maptest
 
 import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.util.Base64.DEFAULT
-import android.util.Base64.encodeToString
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -19,8 +16,9 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.infowindow.view.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 
@@ -34,10 +32,13 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var circle: Circle? = null
     private var polygon: Polygon? = null
 
+    lateinit var api: ServiceApiImpl
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
         setContentView(R.layout.activity_main)
+        api = ServiceApiImpl()
 
 
         if (BuildConfig.IS_DEBUG) {
@@ -59,10 +60,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         mapApi.addMarker(MarkerOptions().position(sydney).title("선릉"))
         mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(sydney, 17f))
 
-        mapApi.setOnMapClickListener {
-            mapApi.addMarker(MarkerOptions().position(it).title("선릉"))
-            mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
-        }
+//        mapApi.setOnMapClickListener {
+//            mapApi.addMarker(MarkerOptions().position(it).title("선릉"))
+//            mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 17f))
+//        }
 
         /**
          * 지도를 움직이기 시작할 때 발생하는 이벤트 리스너
@@ -108,9 +109,19 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         initResources()
+
+        startLocationService();
     }
 
     private fun initResources() {
+        btnVehicle.setOnClickListener{
+            realtimeLocation()
+        }
+
+        btnParking.setOnClickListener{
+            parkLocation()
+        }
+
         btnReset.setOnClickListener {
             mapApi.clear()
         }
@@ -251,5 +262,64 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun getCenter(): LatLng? {
         return mapApi.cameraPosition.target
+    }
+
+    open fun startLocationService() {
+        val intent = Intent(activity, LocationService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(intent)
+        } else {
+            activity.startService(intent)
+        }
+    }
+
+    private fun realtimeLocation() {
+        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140").enqueue(object : Callback<GetSearchResponse> {
+            override fun onResponse(
+                call: Call<GetSearchResponse>,
+                response: Response<GetSearchResponse>
+            ) {
+
+                var realTimeVehicleStatus = response.body()?.data?.realTimeVehicleStatus
+
+                val lat = realTimeVehicleStatus?.resMsg?.lat!!
+                val lon = realTimeVehicleStatus.resMsg?.lon!!
+
+                val location = LatLng(lat, lon)
+                mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
+                mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+
+                Log.e("JHC_DEBUG", String.format("lat : %s / lon : %s", lat.toString(), lon.toString()))
+            }
+
+            override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                Log.e("JHC_DEBUG", t?.message)
+            }
+        })
+    }
+
+    private fun parkLocation() {
+        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140").enqueue(object : Callback<GetSearchResponse> {
+            override fun onResponse(
+                call: Call<GetSearchResponse>,
+                response: Response<GetSearchResponse>
+            ) {
+
+                var parkLocation = response.body()?.data?.parkLocation
+
+                val lat = parkLocation?.lat!!
+                val lon = parkLocation.lon
+
+                val location = LatLng(lat, lon)
+                mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
+                mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+
+                Log.e("JHC_DEBUG", String.format("lat : %s / lon : %s", lat.toString(), lon.toString()))
+            }
+
+            override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                Log.e("JHC_DEBUG", t?.message)
+            }
+        })
     }
 }

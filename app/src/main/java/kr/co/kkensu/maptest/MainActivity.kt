@@ -1,13 +1,10 @@
 package kr.co.kkensu.maptest
 
 import android.app.Activity
-import android.content.Context
-import android.content.pm.PackageInfo
-import android.content.pm.PackageManager
+import android.content.Intent
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
-import android.util.Base64.DEFAULT
-import android.util.Base64.encodeToString
 import android.util.Log
 import android.view.View
 import android.widget.Toast
@@ -17,10 +14,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.*
+import com.gun0912.tedpermission.PermissionListener
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.infowindow.view.*
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
 import java.util.*
 
 
@@ -108,6 +104,8 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         initResources()
+
+        startLocationService();
     }
 
     private fun initResources() {
@@ -251,5 +249,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     fun getCenter(): LatLng? {
         return mapApi.cameraPosition.target
+    }
+
+    open fun startLocationService() {
+        val intent = Intent(activity, LocationService::class.java)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            activity.startForegroundService(intent)
+        } else {
+            activity.startService(intent)
+        }
     }
 }

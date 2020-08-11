@@ -33,12 +33,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     private var polygon: Polygon? = null
 
     lateinit var api: ServiceApiImpl
+    lateinit var hyundaiApi: HyundaiApiImpl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         activity = this
         setContentView(R.layout.activity_main)
         api = ServiceApiImpl()
+        hyundaiApi = HyundaiApiImpl()
 
 
         if (BuildConfig.IS_DEBUG) {
@@ -114,11 +116,11 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun initResources() {
-        btnVehicle.setOnClickListener{
+        btnVehicle.setOnClickListener {
             realtimeLocation()
         }
 
-        btnParking.setOnClickListener{
+        btnParking.setOnClickListener {
             parkLocation()
         }
 
@@ -274,12 +276,81 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun realtimeLocation() {
-        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140").enqueue(object : Callback<GetSearchResponse> {
+        progressBar.visibility = View.VISIBLE
+        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
+            .enqueue(object : Callback<GetSearchResponse> {
+                override fun onResponse(
+                    call: Call<GetSearchResponse>,
+                    response: Response<GetSearchResponse>
+                ) {
+                    progressBar.visibility = View.GONE
+                    var realTimeVehicleStatus = response.body()?.data?.realTimeVehicleStatus
+
+                    try {
+                        val lat = realTimeVehicleStatus?.resMsg?.lat!!
+                        val lon = realTimeVehicleStatus.resMsg?.lon!!
+
+                        val location = LatLng(lat, lon)
+                        mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
+                        mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+
+                        Log.e(
+                            "JHC_DEBUG",
+                            String.format("lat : %s / lon : %s", lat.toString(), lon.toString())
+                        )
+                    } catch (e: Exception) {
+//                        txtLog.text =
+//                        Log.e("JHC_DEBUG", "에러")
+                        Toast.makeText(this@MainActivity, "에러", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
+                    Log.e("JHC_DEBUG", t?.message)
+                }
+            })
+    }
+
+    private fun parkLocation() {
+        progressBar.visibility = View.VISIBLE
+        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
+            .enqueue(object : Callback<GetSearchResponse> {
+                override fun onResponse(
+                    call: Call<GetSearchResponse>,
+                    response: Response<GetSearchResponse>
+                ) {
+                    progressBar.visibility = View.GONE
+                    var parkLocation = response.body()?.data?.parkLocation
+
+                    val lat = parkLocation?.lat!!
+                    val lon = parkLocation.lon
+
+                    val location = LatLng(lat, lon)
+                    mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
+                    mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+
+                    Log.e(
+                        "JHC_DEBUG",
+                        String.format("lat : %s / lon : %s", lat.toString(), lon.toString())
+                    )
+                }
+
+                override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
+                    Log.e("JHC_DEBUG", t?.message)
+                }
+            })
+    }
+
+    private fun check() {
+        progressBar.visibility = View.VISIBLE
+        hyundaiApi.search("").enqueue(object : Callback<GetSearchResponse> {
             override fun onResponse(
                 call: Call<GetSearchResponse>,
                 response: Response<GetSearchResponse>
             ) {
-
+                progressBar.visibility = View.GONE
                 var realTimeVehicleStatus = response.body()?.data?.realTimeVehicleStatus
 
                 val lat = realTimeVehicleStatus?.resMsg?.lat!!
@@ -289,35 +360,14 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
                 mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
                 mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
 
-                Log.e("JHC_DEBUG", String.format("lat : %s / lon : %s", lat.toString(), lon.toString()))
+                Log.e(
+                    "JHC_DEBUG",
+                    String.format("lat : %s / lon : %s", lat.toString(), lon.toString())
+                )
             }
 
             override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
-                Log.e("JHC_DEBUG", t?.message)
-            }
-        })
-    }
-
-    private fun parkLocation() {
-        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140").enqueue(object : Callback<GetSearchResponse> {
-            override fun onResponse(
-                call: Call<GetSearchResponse>,
-                response: Response<GetSearchResponse>
-            ) {
-
-                var parkLocation = response.body()?.data?.parkLocation
-
-                val lat = parkLocation?.lat!!
-                val lon = parkLocation.lon
-
-                val location = LatLng(lat, lon)
-                mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
-                mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
-
-                Log.e("JHC_DEBUG", String.format("lat : %s / lon : %s", lat.toString(), lon.toString()))
-            }
-
-            override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                progressBar.visibility = View.GONE
                 Log.e("JHC_DEBUG", t?.message)
             }
         })

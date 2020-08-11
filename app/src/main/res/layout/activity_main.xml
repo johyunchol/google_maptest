@@ -38,6 +38,25 @@
         android:background="@android:color/white"
         android:orientation="vertical">
 
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="120dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtLog"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:text="awefawef\nsadㄹㅁㅈㄷㄹㅁㅈㄷㄹ" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
         <TextView
             android:id="@+id/txtCenter"
             android:layout_width="match_parent"
@@ -66,38 +85,54 @@
                     android:id="@+id/btnParking"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="visible"
-                    android:text="차량주차위치" />
+                    android:text="차량주차위치"
+                    android:visibility="visible" />
 
                 <Button
                     android:id="@+id/btnPolyline"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="wrap_content"
-                    android:text="직선그리기" />
+                    android:text="직선그리기"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnCircle"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="wrap_content"
-                    android:text="원그리기" />
+                    android:text="원그리기"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnPolygon"
                     android:layout_width="wrap_content"
-                    android:visibility="gone"
                     android:layout_height="wrap_content"
-                    android:text="다각형" />
+                    android:text="다각형"
+                    android:visibility="gone" />
 
                 <Button
                     android:id="@+id/btnMultiPolygon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    android:text="다각형 여러개" />
+                    android:text="다각형 여러개"
+                    android:visibility="gone" />
 
             </LinearLayout>
         </HorizontalScrollView>
     </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#99000000"
+        android:clickable="true"
+        android:focusable="true"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
+
+    </RelativeLayout>
 </RelativeLayout>

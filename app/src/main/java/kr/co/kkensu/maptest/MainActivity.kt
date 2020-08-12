@@ -120,6 +120,10 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
             realtimeLocation()
         }
 
+        btnVehicle2.setOnClickListener {
+            realtimeLocation2()
+        }
+
         btnParking.setOnClickListener {
             parkLocation()
         }
@@ -277,13 +281,64 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun realtimeLocation() {
         progressBar.visibility = View.VISIBLE
-        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
+        api.getVehicleStatus("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
             .enqueue(object : Callback<GetSearchResponse> {
                 override fun onResponse(
                     call: Call<GetSearchResponse>,
                     response: Response<GetSearchResponse>
                 ) {
                     progressBar.visibility = View.GONE
+                    try {
+                        var cumulativeDistance = response.body()?.data?.cumulativeDistance
+                        txtLog.text = cumulativeDistance?.odometers?.toString()
+                    } catch (e: Exception) {
+
+                    }
+
+                    var realTimeVehicleStatus = response.body()?.data?.realTimeVehicleStatus
+
+                    try {
+                        val lat = realTimeVehicleStatus?.resMsg?.lat!!
+                        val lon = realTimeVehicleStatus.resMsg?.lon!!
+
+                        val location = LatLng(lat, lon)
+                        mapApi.addMarker(MarkerOptions().position(location).title("선릉"))
+                        mapApi.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 17f))
+
+                        Log.e(
+                            "JHC_DEBUG",
+                            String.format("lat : %s / lon : %s", lat.toString(), lon.toString())
+                        )
+                    } catch (e: Exception) {
+//                        txtLog.text =
+//                        Log.e("JHC_DEBUG", "에러")
+                        Toast.makeText(this@MainActivity, "에러", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<GetSearchResponse>, t: Throwable) {
+                    progressBar.visibility = View.GONE
+                    Log.e("JHC_DEBUG", t?.message)
+                }
+            })
+    }
+
+    private fun realtimeLocation2() {
+        progressBar.visibility = View.VISIBLE
+        api.getVehicleStatus2("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
+            .enqueue(object : Callback<GetSearchResponse> {
+                override fun onResponse(
+                    call: Call<GetSearchResponse>,
+                    response: Response<GetSearchResponse>
+                ) {
+                    progressBar.visibility = View.GONE
+                    try {
+                        var cumulativeDistance = response.body()?.data?.cumulativeDistance
+                        txtLog.text = cumulativeDistance?.odometers?.toString()
+                    } catch (e: Exception) {
+
+                    }
+
                     var realTimeVehicleStatus = response.body()?.data?.realTimeVehicleStatus
 
                     try {
@@ -314,13 +369,22 @@ class MainActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun parkLocation() {
         progressBar.visibility = View.VISIBLE
-        api.search("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
+        api.getParkLocation("ocNIrM4hVmZ8GnUBFFsUjmrWl5j1", "3140")
             .enqueue(object : Callback<GetSearchResponse> {
                 override fun onResponse(
                     call: Call<GetSearchResponse>,
                     response: Response<GetSearchResponse>
                 ) {
                     progressBar.visibility = View.GONE
+
+                    try {
+                        var cumulativeDistance = response.body()?.data?.cumulativeDistance
+                        txtLog.text = cumulativeDistance?.odometers?.toString()
+                    } catch (e: Exception) {
+
+                    }
+
+
                     var parkLocation = response.body()?.data?.parkLocation
 
                     val lat = parkLocation?.lat!!

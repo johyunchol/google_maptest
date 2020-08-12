@@ -22,7 +22,6 @@ import javax.net.ssl.X509TrustManager;
 import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -63,8 +62,8 @@ public class ServiceApiImpl implements ServiceApi {
         }
 
         OkHttpClient httpClient = new OkHttpClient.Builder()
-                .readTimeout(10, TimeUnit.SECONDS)
-                .connectTimeout(5, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .connectTimeout(20, TimeUnit.SECONDS)
                 .sslSocketFactory(sslSocketFactory)
 //                .addInterceptor(logging)
 //                .addInterceptor(new LogInterceptor(BuildConfig.IS_DEBUG ? true : false))
@@ -93,7 +92,7 @@ public class ServiceApiImpl implements ServiceApi {
         mapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ", Locale.getDefault()));
         Retrofit retrofit = new Retrofit.Builder()
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .baseUrl("https://api-svc.itcha.co.kr")
+                .baseUrl("https://api-trd.itcha.co.kr:8280")
                 .addConverterFactory(GsonConverterFactory.create())
                 .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .client(httpClient)
@@ -104,7 +103,19 @@ public class ServiceApiImpl implements ServiceApi {
 
     @NotNull
     @Override
-    public Call<GetSearchResponse> search(@NotNull String userId, @NotNull String vehicleId) {
-        return api.search(userId, vehicleId);
+    public Call<GetSearchResponse> getVehicleStatus(@NotNull String userId, @NotNull String vehicleId) {
+        return api.getVehicleStatus(userId, vehicleId);
+    }
+
+    @NotNull
+    @Override
+    public Call<GetSearchResponse> getVehicleStatus2(@NotNull String userId, @NotNull String vehicleId) {
+        return api.getVehicleStatus2(userId, vehicleId);
+    }
+
+    @NotNull
+    @Override
+    public Call<GetSearchResponse> getParkLocation(@NotNull String userId, @NotNull String vehicleId) {
+        return api.getParkLocation(userId, vehicleId);
     }
 }

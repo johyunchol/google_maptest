@@ -1,11 +1,22 @@
 package kr.co.kkensu.maptest;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Response implements Serializable {
 
+    private CumulativeDistance cumulativeDistance;
     private RealTimeVehicleStatus realTimeVehicleStatus;
     private ParkLocation parkLocation;
+
+    public CumulativeDistance getCumulativeDistance() {
+        return cumulativeDistance;
+    }
+
+    public void setCumulativeDistance(CumulativeDistance cumulativeDistance) {
+        this.cumulativeDistance = cumulativeDistance;
+    }
 
     public RealTimeVehicleStatus getRealTimeVehicleStatus() {
         return realTimeVehicleStatus;
@@ -57,6 +68,74 @@ public class Response implements Serializable {
                     "lat=" + lat +
                     ", lon=" + lon +
                     '}';
+        }
+    }
+
+    public static class CumulativeDistance implements Serializable {
+        private List<Odometer> odometers = new ArrayList<>();
+        private String msgId;
+
+        public List<Odometer> getOdometers() {
+            return odometers;
+        }
+
+        public void setOdometers(List<Odometer> odometers) {
+            this.odometers = odometers;
+        }
+
+        public String getMsgId() {
+            return msgId;
+        }
+
+        public void setMsgId(String msgId) {
+            this.msgId = msgId;
+        }
+
+        @Override
+        public String toString() {
+            return "CumulativeDistance{" +
+                    "odometers=" + odometers +
+                    ", msgId='" + msgId + '\'' +
+                    '}';
+        }
+
+        public static class Odometer {
+            String timestamp;
+            double value;
+            int unit;
+
+            public String getTimestamp() {
+                return timestamp;
+            }
+
+            public void setTimestamp(String timestamp) {
+                this.timestamp = timestamp;
+            }
+
+            public double getValue() {
+                return value;
+            }
+
+            public void setValue(double value) {
+                this.value = value;
+            }
+
+            public int getUnit() {
+                return unit;
+            }
+
+            public void setUnit(int unit) {
+                this.unit = unit;
+            }
+
+            @Override
+            public String toString() {
+                return "Odometers{" +
+                        "timestamp='" + timestamp + '\'' +
+                        ", value=" + value +
+                        ", unit=" + unit +
+                        '}';
+            }
         }
     }
 
